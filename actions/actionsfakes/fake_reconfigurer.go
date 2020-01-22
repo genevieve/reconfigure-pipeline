@@ -4,17 +4,17 @@ package actionsfakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/reconfigure-pipeline/actions"
+	"github.com/genevieve/reconfigure-pipeline/actions"
 )
 
 type FakeReconfigurer struct {
-	ReconfigureStub        func(target, pipeline, configPath, variablesPath string) error
+	ReconfigureStub        func(string, string, string, string) error
 	reconfigureMutex       sync.RWMutex
 	reconfigureArgsForCall []struct {
-		target        string
-		pipeline      string
-		configPath    string
-		variablesPath string
+		arg1 string
+		arg2 string
+		arg3 string
+		arg4 string
 	}
 	reconfigureReturns struct {
 		result1 error
@@ -26,24 +26,25 @@ type FakeReconfigurer struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeReconfigurer) Reconfigure(target string, pipeline string, configPath string, variablesPath string) error {
+func (fake *FakeReconfigurer) Reconfigure(arg1 string, arg2 string, arg3 string, arg4 string) error {
 	fake.reconfigureMutex.Lock()
 	ret, specificReturn := fake.reconfigureReturnsOnCall[len(fake.reconfigureArgsForCall)]
 	fake.reconfigureArgsForCall = append(fake.reconfigureArgsForCall, struct {
-		target        string
-		pipeline      string
-		configPath    string
-		variablesPath string
-	}{target, pipeline, configPath, variablesPath})
-	fake.recordInvocation("Reconfigure", []interface{}{target, pipeline, configPath, variablesPath})
+		arg1 string
+		arg2 string
+		arg3 string
+		arg4 string
+	}{arg1, arg2, arg3, arg4})
+	fake.recordInvocation("Reconfigure", []interface{}{arg1, arg2, arg3, arg4})
 	fake.reconfigureMutex.Unlock()
 	if fake.ReconfigureStub != nil {
-		return fake.ReconfigureStub(target, pipeline, configPath, variablesPath)
+		return fake.ReconfigureStub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.reconfigureReturns.result1
+	fakeReturns := fake.reconfigureReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeReconfigurer) ReconfigureCallCount() int {
@@ -52,13 +53,22 @@ func (fake *FakeReconfigurer) ReconfigureCallCount() int {
 	return len(fake.reconfigureArgsForCall)
 }
 
+func (fake *FakeReconfigurer) ReconfigureCalls(stub func(string, string, string, string) error) {
+	fake.reconfigureMutex.Lock()
+	defer fake.reconfigureMutex.Unlock()
+	fake.ReconfigureStub = stub
+}
+
 func (fake *FakeReconfigurer) ReconfigureArgsForCall(i int) (string, string, string, string) {
 	fake.reconfigureMutex.RLock()
 	defer fake.reconfigureMutex.RUnlock()
-	return fake.reconfigureArgsForCall[i].target, fake.reconfigureArgsForCall[i].pipeline, fake.reconfigureArgsForCall[i].configPath, fake.reconfigureArgsForCall[i].variablesPath
+	argsForCall := fake.reconfigureArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
 func (fake *FakeReconfigurer) ReconfigureReturns(result1 error) {
+	fake.reconfigureMutex.Lock()
+	defer fake.reconfigureMutex.Unlock()
 	fake.ReconfigureStub = nil
 	fake.reconfigureReturns = struct {
 		result1 error
@@ -66,6 +76,8 @@ func (fake *FakeReconfigurer) ReconfigureReturns(result1 error) {
 }
 
 func (fake *FakeReconfigurer) ReconfigureReturnsOnCall(i int, result1 error) {
+	fake.reconfigureMutex.Lock()
+	defer fake.reconfigureMutex.Unlock()
 	fake.ReconfigureStub = nil
 	if fake.reconfigureReturnsOnCall == nil {
 		fake.reconfigureReturnsOnCall = make(map[int]struct {

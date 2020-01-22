@@ -8,8 +8,8 @@ import (
 	"os"
 	"path"
 
-	"github.com/pivotal-cf/reconfigure-pipeline/actions"
-	"github.com/pivotal-cf/reconfigure-pipeline/actions/actionsfakes"
+	"github.com/genevieve/reconfigure-pipeline/actions"
+	"github.com/genevieve/reconfigure-pipeline/actions/actionsfakes"
 )
 
 var _ = Describe("Reconfigure Pipeline", func() {

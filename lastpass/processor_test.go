@@ -12,7 +12,7 @@ import (
 
 	"errors"
 
-	"github.com/pivotal-cf/reconfigure-pipeline/lastpass"
+	"github.com/genevieve/reconfigure-pipeline/lastpass"
 )
 
 var _ = Describe("Processor", func() {

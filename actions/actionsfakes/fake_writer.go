@@ -4,14 +4,14 @@ package actionsfakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/reconfigure-pipeline/actions"
+	"github.com/genevieve/reconfigure-pipeline/actions"
 )
 
 type FakeWriter struct {
-	WriteStub        func(content string) (string, error)
+	WriteStub        func(string) (string, error)
 	writeMutex       sync.RWMutex
 	writeArgsForCall []struct {
-		content string
+		arg1 string
 	}
 	writeReturns struct {
 		result1 string
@@ -25,21 +25,22 @@ type FakeWriter struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeWriter) Write(content string) (string, error) {
+func (fake *FakeWriter) Write(arg1 string) (string, error) {
 	fake.writeMutex.Lock()
 	ret, specificReturn := fake.writeReturnsOnCall[len(fake.writeArgsForCall)]
 	fake.writeArgsForCall = append(fake.writeArgsForCall, struct {
-		content string
-	}{content})
-	fake.recordInvocation("Write", []interface{}{content})
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("Write", []interface{}{arg1})
 	fake.writeMutex.Unlock()
 	if fake.WriteStub != nil {
-		return fake.WriteStub(content)
+		return fake.WriteStub(arg1)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	return fake.writeReturns.result1, fake.writeReturns.result2
+	fakeReturns := fake.writeReturns
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakeWriter) WriteCallCount() int {
@@ -48,13 +49,22 @@ func (fake *FakeWriter) WriteCallCount() int {
 	return len(fake.writeArgsForCall)
 }
 
+func (fake *FakeWriter) WriteCalls(stub func(string) (string, error)) {
+	fake.writeMutex.Lock()
+	defer fake.writeMutex.Unlock()
+	fake.WriteStub = stub
+}
+
 func (fake *FakeWriter) WriteArgsForCall(i int) string {
 	fake.writeMutex.RLock()
 	defer fake.writeMutex.RUnlock()
-	return fake.writeArgsForCall[i].content
+	argsForCall := fake.writeArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *FakeWriter) WriteReturns(result1 string, result2 error) {
+	fake.writeMutex.Lock()
+	defer fake.writeMutex.Unlock()
 	fake.WriteStub = nil
 	fake.writeReturns = struct {
 		result1 string
@@ -63,6 +73,8 @@ func (fake *FakeWriter) WriteReturns(result1 string, result2 error) {
 }
 
 func (fake *FakeWriter) WriteReturnsOnCall(i int, result1 string, result2 error) {
+	fake.writeMutex.Lock()
+	defer fake.writeMutex.Unlock()
 	fake.WriteStub = nil
 	if fake.writeReturnsOnCall == nil {
 		fake.writeReturnsOnCall = make(map[int]struct {

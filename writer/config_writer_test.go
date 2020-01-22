@@ -8,7 +8,7 @@ import (
 
 	"io/ioutil"
 
-	"github.com/pivotal-cf/reconfigure-pipeline/writer"
+	"github.com/genevieve/reconfigure-pipeline/writer"
 )
 
 var _ = Describe("Config Writer", func() {

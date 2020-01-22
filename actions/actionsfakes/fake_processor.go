@@ -4,14 +4,14 @@ package actionsfakes
 import (
 	"sync"
 
-	"github.com/pivotal-cf/reconfigure-pipeline/actions"
+	"github.com/genevieve/reconfigure-pipeline/actions"
 )
 
 type FakeProcessor struct {
-	ProcessStub        func(config string) string
+	ProcessStub        func(string) string
 	processMutex       sync.RWMutex
 	processArgsForCall []struct {
-		config string
+		arg1 string
 	}
 	processReturns struct {
 		result1 string
@@ -23,21 +23,22 @@ type FakeProcessor struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeProcessor) Process(config string) string {
+func (fake *FakeProcessor) Process(arg1 string) string {
 	fake.processMutex.Lock()
 	ret, specificReturn := fake.processReturnsOnCall[len(fake.processArgsForCall)]
 	fake.processArgsForCall = append(fake.processArgsForCall, struct {
-		config string
-	}{config})
-	fake.recordInvocation("Process", []interface{}{config})
+		arg1 string
+	}{arg1})
+	fake.recordInvocation("Process", []interface{}{arg1})
 	fake.processMutex.Unlock()
 	if fake.ProcessStub != nil {
-		return fake.ProcessStub(config)
+		return fake.ProcessStub(arg1)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	return fake.processReturns.result1
+	fakeReturns := fake.processReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeProcessor) ProcessCallCount() int {
@@ -46,13 +47,22 @@ func (fake *FakeProcessor) ProcessCallCount() int {
 	return len(fake.processArgsForCall)
 }
 
+func (fake *FakeProcessor) ProcessCalls(stub func(string) string) {
+	fake.processMutex.Lock()
+	defer fake.processMutex.Unlock()
+	fake.ProcessStub = stub
+}
+
 func (fake *FakeProcessor) ProcessArgsForCall(i int) string {
 	fake.processMutex.RLock()
 	defer fake.processMutex.RUnlock()
-	return fake.processArgsForCall[i].config
+	argsForCall := fake.processArgsForCall[i]
+	return argsForCall.arg1
 }
 
 func (fake *FakeProcessor) ProcessReturns(result1 string) {
+	fake.processMutex.Lock()
+	defer fake.processMutex.Unlock()
 	fake.ProcessStub = nil
 	fake.processReturns = struct {
 		result1 string
@@ -60,6 +70,8 @@ func (fake *FakeProcessor) ProcessReturns(result1 string) {
 }
 
 func (fake *FakeProcessor) ProcessReturnsOnCall(i int, result1 string) {
+	fake.processMutex.Lock()
+	defer fake.processMutex.Unlock()
 	fake.ProcessStub = nil
 	if fake.processReturnsOnCall == nil {
 		fake.processReturnsOnCall = make(map[int]struct {

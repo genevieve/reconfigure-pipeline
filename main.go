@@ -3,12 +3,12 @@ package main
 import (
 	"os"
 
+	"github.com/genevieve/reconfigure-pipeline/actions"
+	"github.com/genevieve/reconfigure-pipeline/commandrunner"
+	"github.com/genevieve/reconfigure-pipeline/concourse"
+	"github.com/genevieve/reconfigure-pipeline/lastpass"
+	"github.com/genevieve/reconfigure-pipeline/writer"
 	"github.com/jessevdk/go-flags"
-	"github.com/pivotal-cf/reconfigure-pipeline/actions"
-	"github.com/pivotal-cf/reconfigure-pipeline/commandrunner"
-	"github.com/pivotal-cf/reconfigure-pipeline/concourse"
-	"github.com/pivotal-cf/reconfigure-pipeline/lastpass"
-	"github.com/pivotal-cf/reconfigure-pipeline/writer"
 )
 
 func main() {
