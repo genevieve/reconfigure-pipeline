@@ -13,10 +13,11 @@ import (
 
 func main() {
 	var opts struct {
-		ConfigPath    string `short:"c" long:"config" required:"true" description:"Pipeline configuration file"`
-		Pipeline      string `short:"p" long:"pipeline" required:"true" description:"Pipeline to configure"`
-		Target        string `short:"t" long:"target" required:"true" description:"Concourse target name"`
-		VariablesPath string `short:"l" long:"load-vars-from" description:"Variable flag that can be used for filling in template values in configuration from a YAML file"`
+		ConfigPath     string `short:"c" long:"config" required:"true" description:"Pipeline configuration file"`
+		Pipeline       string `short:"p" long:"pipeline" required:"true" description:"Pipeline to configure"`
+		Target         string `short:"t" long:"target" required:"true" description:"Concourse target name"`
+		VariablesPath  string `short:"l" long:"load-vars-from" description:"Variable flag that can be used for filling in template values in configuration from a YAML file"`
+		NonInteractive bool   `short:"n" long:"non-interactive" description:"Skip confirmation"`
 	}
 
 	_, err := flags.Parse(&opts)
@@ -25,7 +26,7 @@ func main() {
 	}
 
 	action := newReconfigurePipeline()
-	err = action.Run(opts.Target, opts.Pipeline, opts.ConfigPath, opts.VariablesPath)
+	err = action.Run(opts.Target, opts.Pipeline, opts.ConfigPath, opts.VariablesPath, opts.NonInteractive)
 
 	if err != nil {
 		os.Exit(1)

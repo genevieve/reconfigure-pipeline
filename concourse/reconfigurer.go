@@ -17,10 +17,14 @@ func NewReconfigurer(commandRunner commandrunner.CommandRunner) *Reconfigurer {
 	}
 }
 
-func (r *Reconfigurer) Reconfigure(target, pipeline, configPath, variablesPath string) error {
+func (r *Reconfigurer) Reconfigure(target, pipeline, configPath, variablesPath string, nonInteractive bool) error {
 	args := []string{"-t", target, "set-pipeline", "-p", pipeline, "-c", configPath}
 	if variablesPath != "" {
 		args = append(args, "-l", variablesPath)
+	}
+
+	if nonInteractive {
+		args = append(args, "--non-interactive")
 	}
 
 	cmd := exec.Command("fly", args...)

@@ -42,7 +42,7 @@ var _ = Describe("Reconfigure Pipeline", func() {
 	It("writes the processed configuration file to a pipe", func() {
 		processor.ProcessReturns("My Processed Config")
 
-		action.Run("my-special-target", "my-special-pipeline", configPath, "")
+		action.Run("my-special-target", "my-special-pipeline", configPath, "", false)
 
 		Expect(processor.ProcessCallCount()).To(Equal(1))
 		Expect(processor.ProcessArgsForCall(0)).To(Equal("My Special Config"))
@@ -54,11 +54,11 @@ var _ = Describe("Reconfigure Pipeline", func() {
 	It("updates the pipeline using the processed configuration", func() {
 		writer.WriteReturns("/tmp/processed.yml", nil)
 
-		action.Run("my-special-target", "my-special-pipeline", configPath, "/tmp/vars.yml")
+		action.Run("my-special-target", "my-special-pipeline", configPath, "/tmp/vars.yml", false)
 
 		Expect(reconfigurer.ReconfigureCallCount()).To(Equal(1))
 
-		target, pipeline, configPath, variablesPath := reconfigurer.ReconfigureArgsForCall(0)
+		target, pipeline, configPath, variablesPath, _ := reconfigurer.ReconfigureArgsForCall(0)
 		Expect(target).To(Equal("my-special-target"))
 		Expect(pipeline).To(Equal("my-special-pipeline"))
 		Expect(configPath).To(Equal("/tmp/processed.yml"))

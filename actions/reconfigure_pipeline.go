@@ -24,7 +24,7 @@ func NewReconfigurePipeline(
 	}
 }
 
-func (r *ReconfigurePipeline) Run(target, pipeline, configPath, variablesPath string) error {
+func (r *ReconfigurePipeline) Run(target, pipeline, configPath, variablesPath string, nonInteractive bool) error {
 	processedConfigPath, err := r.processConfigFile(configPath)
 	defer os.Remove(processedConfigPath)
 
@@ -32,7 +32,7 @@ func (r *ReconfigurePipeline) Run(target, pipeline, configPath, variablesPath st
 		log.Fatal(err)
 	}
 
-	return r.reconfigurer.Reconfigure(target, pipeline, processedConfigPath, variablesPath)
+	return r.reconfigurer.Reconfigure(target, pipeline, processedConfigPath, variablesPath, nonInteractive)
 }
 
 func (r *ReconfigurePipeline) processConfigFile(path string) (string, error) {

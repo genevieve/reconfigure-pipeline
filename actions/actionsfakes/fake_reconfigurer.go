@@ -8,13 +8,14 @@ import (
 )
 
 type FakeReconfigurer struct {
-	ReconfigureStub        func(string, string, string, string) error
+	ReconfigureStub        func(string, string, string, string, bool) error
 	reconfigureMutex       sync.RWMutex
 	reconfigureArgsForCall []struct {
 		arg1 string
 		arg2 string
 		arg3 string
 		arg4 string
+		arg5 bool
 	}
 	reconfigureReturns struct {
 		result1 error
@@ -26,7 +27,7 @@ type FakeReconfigurer struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeReconfigurer) Reconfigure(arg1 string, arg2 string, arg3 string, arg4 string) error {
+func (fake *FakeReconfigurer) Reconfigure(arg1 string, arg2 string, arg3 string, arg4 string, arg5 bool) error {
 	fake.reconfigureMutex.Lock()
 	ret, specificReturn := fake.reconfigureReturnsOnCall[len(fake.reconfigureArgsForCall)]
 	fake.reconfigureArgsForCall = append(fake.reconfigureArgsForCall, struct {
@@ -34,11 +35,12 @@ func (fake *FakeReconfigurer) Reconfigure(arg1 string, arg2 string, arg3 string,
 		arg2 string
 		arg3 string
 		arg4 string
-	}{arg1, arg2, arg3, arg4})
-	fake.recordInvocation("Reconfigure", []interface{}{arg1, arg2, arg3, arg4})
+		arg5 bool
+	}{arg1, arg2, arg3, arg4, arg5})
+	fake.recordInvocation("Reconfigure", []interface{}{arg1, arg2, arg3, arg4, arg5})
 	fake.reconfigureMutex.Unlock()
 	if fake.ReconfigureStub != nil {
-		return fake.ReconfigureStub(arg1, arg2, arg3, arg4)
+		return fake.ReconfigureStub(arg1, arg2, arg3, arg4, arg5)
 	}
 	if specificReturn {
 		return ret.result1
@@ -53,17 +55,17 @@ func (fake *FakeReconfigurer) ReconfigureCallCount() int {
 	return len(fake.reconfigureArgsForCall)
 }
 
-func (fake *FakeReconfigurer) ReconfigureCalls(stub func(string, string, string, string) error) {
+func (fake *FakeReconfigurer) ReconfigureCalls(stub func(string, string, string, string, bool) error) {
 	fake.reconfigureMutex.Lock()
 	defer fake.reconfigureMutex.Unlock()
 	fake.ReconfigureStub = stub
 }
 
-func (fake *FakeReconfigurer) ReconfigureArgsForCall(i int) (string, string, string, string) {
+func (fake *FakeReconfigurer) ReconfigureArgsForCall(i int) (string, string, string, string, bool) {
 	fake.reconfigureMutex.RLock()
 	defer fake.reconfigureMutex.RUnlock()
 	argsForCall := fake.reconfigureArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
 }
 
 func (fake *FakeReconfigurer) ReconfigureReturns(result1 error) {

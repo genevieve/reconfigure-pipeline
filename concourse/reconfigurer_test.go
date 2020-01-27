@@ -26,7 +26,7 @@ var _ = Describe("Reconfigurer", func() {
 	})
 
 	It("runs fly with the correct arguments", func() {
-		err := reconfigurer.Reconfigure("my-target", "my-pipeline", "/tmp/config.yml", "/tmp/vars.yml")
+		err := reconfigurer.Reconfigure("my-target", "my-pipeline", "/tmp/config.yml", "/tmp/vars.yml", false)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(commandRunner).To(HaveExecutedSerially(CommandSpec{
@@ -42,7 +42,7 @@ var _ = Describe("Reconfigurer", func() {
 	})
 
 	It("omits -l if variables file is not provided", func() {
-		err := reconfigurer.Reconfigure("my-target", "my-pipeline", "/tmp/config.yml", "")
+		err := reconfigurer.Reconfigure("my-target", "my-pipeline", "/tmp/config.yml", "", false)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(commandRunner).To(HaveExecutedSerially(CommandSpec{
@@ -56,6 +56,22 @@ var _ = Describe("Reconfigurer", func() {
 		}))
 	})
 
+	It("adds --non-interactive if nonInteractive is true", func() {
+		err := reconfigurer.Reconfigure("my-target", "my-pipeline", "/tmp/config.yml", "", true)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(commandRunner).To(HaveExecutedSerially(CommandSpec{
+			Path: "fly",
+			Args: []string{
+				"-t", "my-target",
+				"set-pipeline",
+				"-p", "my-pipeline",
+				"-c", "/tmp/config.yml",
+				"--non-interactive",
+			},
+		}))
+	})
+
 	It("returns an error if fly fails", func() {
 		commandRunner.WhenRunning(CommandSpec{
 			Path: "fly",
@@ -63,7 +79,7 @@ var _ = Describe("Reconfigurer", func() {
 			return errors.New("My Special Error")
 		})
 
-		err := reconfigurer.Reconfigure("my-target", "my-pipeline", "/tmp/config.yml", "/tmp/vars.yml")
+		err := reconfigurer.Reconfigure("my-target", "my-pipeline", "/tmp/config.yml", "/tmp/vars.yml", false)
 		Expect(err).To(HaveOccurred())
 	})
 })
